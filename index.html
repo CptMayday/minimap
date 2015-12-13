@@ -1,0 +1,120 @@
+<html>
+	<head>
+		<title>Project MiniMap</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+		<style>
+			canvas {border:1px solid gray;}
+		</style>
+	</head>
+
+	<body>
+		
+		<h1>Project MiniMap</h1>
+
+		<script type="text/javascript">
+
+			//define canvas
+			var CANVAS_WIDTH = 400;
+			var CANVAS_HEIGHT = 400;
+
+			var canvasElement = $("<canvas width='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT + "'></canvas>");
+			var canvas = canvasElement.get(0).getContext("2d");
+			canvasElement.appendTo('body');
+
+			//game settings
+			var FPS = 30;
+			var playerCount = 3;
+			setInterval(function() {
+			  update();
+			  draw();
+			}, 1000/FPS);
+
+			//configure players
+			var totalPlayers = [
+				[
+				position = "top",
+				color = "red"
+				],
+				[
+				position = "mid",
+				color = "blue"],
+				[
+				position = "bot",
+				color = "green"]
+			];
+
+			var playerCount = totalPlayers.length;
+			for (var i = 0; i < playerCount; i++) {
+				//alert(totalPlayers[i]);
+			}
+
+			//create player array
+			var players = [];
+
+			function Player(position, color) {
+				var I = I || {};
+
+				I.active = true;
+				I.color = color;
+				I.age = 32;
+				I.position = position;
+
+				if (I.position == 'top') {
+					I.x = 34;
+					I.y = 34;
+				} else if (I.position == 'mid') {
+					I.x = 184;
+					I.y = 184;
+				} else if (I.position == 'bot') {
+					I.x = 334;
+					I.y = 334;
+				}
+
+				I.width = 32;
+				I.height = 32;
+
+				I.draw = function() {
+					canvas.fillStyle = this.color;
+					canvas.fillRect(I.x, I.y, this.width, this.height);
+				};	
+
+				I.update = function() {
+					value = Math.floor((Math.random() * 10) + 1);
+					//I.x += value;
+					//I.y += 10;
+				}
+				return I;
+			}
+
+			
+			function update() {
+
+				players = players.filter(function(Player) {
+					return Player.active;
+				});
+
+				players.forEach(function(Player) {
+					Player.update();
+				});				
+
+				for (var i = 0; i < playerCount; i++) {
+		    		players.push(Player.apply(this, totalPlayers[i]));
+		  		} 
+
+			}
+
+			function draw() {
+				
+				canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+				
+				players.forEach(function(player) {
+					
+					player.draw();
+				});
+			}
+
+
+		</script>
+
+	</body>
+</html>
