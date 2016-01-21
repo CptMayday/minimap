@@ -23,7 +23,7 @@
 
 			//game settings
 			var FPS = 30;
-			var playerCount = 3;
+			//var playerCount = 3;
 			setInterval(function() {
 			  update();
 			  draw();
@@ -32,20 +32,22 @@
 			//configure players
 			var totalPlayers = [
 				[
-				position = "top",
-				color = "red"
+					position = "top",
+					color = "red"
 				],
 				[
-				position = "mid",
-				color = "blue"],
+					position = "mid",
+					color = "blue"
+				],
 				[
-				position = "bot",
-				color = "green"]
+					position = "bot",
+					color = "green"
+				]
 			];
 
 			var playerCount = totalPlayers.length;
 			for (var i = 0; i < playerCount; i++) {
-				//alert(totalPlayers[i]);
+				console.log(totalPlayers[i]);
 			}
 
 			//create player array
@@ -80,12 +82,12 @@
 
 				I.update = function() {
 					value = Math.floor((Math.random() * 10) + 1);
-					//I.x += value;
+					I.x += value;
+					I.active = I.active;
 					//I.y += 10;
 				}
 				return I;
 			}
-
 			
 			function update() {
 
@@ -106,13 +108,11 @@
 			function draw() {
 				
 				canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-				
-				players.forEach(function(player) {
-					
-					player.draw();
+
+				players.forEach(function(Player) {
+					Player.draw();
 				});
 			}
-
 
 		</script>
 

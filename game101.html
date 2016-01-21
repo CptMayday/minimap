@@ -1,0 +1,328 @@
+<html>
+<head>
+	<title>My first game</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<style type="text/css" media="screen">
+		canvas {border:1px solid gray;}
+    	canvas { background:url(background.gif) }
+	</style>
+</head>
+<body>
+
+
+<div id="scoreboard">
+	<div id="controls">
+		<a href="#" onclick="callMiss('top')">Miss Top</a>
+		<a href="#" onclick="callMiss('mid')">Miss Mid</a>
+		<a href="#" onclick="callMiss('bot')">Miss Bot</a>
+	</div>
+	<div id="score"></div>
+
+</div>
+
+<script type="text/javascript">
+	
+	//define canvas
+	var CANVAS_WIDTH = 320;
+	var CANVAS_HEIGHT = 320;
+
+	var canvasElement = $("<canvas id='myCanvas' width='" + CANVAS_WIDTH + "' height='" + CANVAS_HEIGHT + "'></canvas>");
+	var canvas = canvasElement.get(0).getContext("2d");
+	canvasElement.appendTo('body');
+
+	//game settings
+	var FPS = 30;
+	var score = 0;
+	
+	setInterval(function() {
+	  update();
+	  draw();
+	}, 1000/FPS);
+
+	//define players
+	var player1 = new player("top", "red");
+	var player2 = new player("mid", "blue");
+	var player3 = new player("bot", "green");
+
+	
+	function player(position, color) {
+		this.position = position;
+		this.color = color;
+		this.status = 'active';
+
+		if (this.position == 'top') {
+			this.x = 25;
+			this.defaultx = this.x;
+			this.y = 25;
+			this.defaulty = this.y;
+		} else if (this.position == 'mid') {
+			this.x = 160;
+			this.defaultx = this.x;
+			this.y = 160;
+			this.defaulty = this.y;
+		} else if (this.position == 'bot') {
+			this.x = 295;
+			this.defaultx = this.x;
+			this.y = 295;
+			this.defaulty = this.y;
+		}
+
+		this.respawn = function() {
+			this.x = this.defaultx;
+			this.y = this.defaulty;
+			this.status = 'active';
+		}
+
+		this.move = function(x, y) {
+			//current position
+			this.x = x;
+			this.y = y;
+
+			//check for left border
+			if(this.x <= 8) {
+				this.x = this.x+1;
+			//check for right border
+			} else if (this.x >= 313) {
+				this.x = this.x-1;
+			} else {
+				this.x = this.x+randomMovement(-1,1);
+			}
+
+			//check for top border
+			if(this.y <= 8) {
+				this.y = this.y+1;
+			//check for bot border
+			} else if (this.y >= 313 ) {
+				this.y = this.y-1;
+			} else {
+				this.y = this.y+randomMovement(-1,1);	
+			}
+			
+		}
+
+		this.checkPosition = function(x, y, jungle) {
+			//determine in lane positions
+			this.x = x;
+			this.y = y;
+
+			if (jungle == "top") {
+
+				//jungleTop coordinates		
+				xA = 52;
+				yA = 52;
+
+				xB = 217;
+				yB = 52;
+
+				xC = 52;
+				yC = 217;
+		
+				var canvas = document.getElementById('myCanvas');
+
+				var ctx1 = canvas.getContext('2d');
+				ctx1.beginPath();
+				ctx1.moveTo(xA,yA);
+				ctx1.lineTo(xB,yB);
+				ctx1.lineTo(xC,yC);
+				ctx1.lineTo(xA,yA);
+				ctx1.closePath();
+
+				if (ctx1.isPointInPath(this.x, this.y)) { 
+					console.log(this.color + " is jungle top");
+					this.status = "inactive";
+				} 
+
+			} else if (jungle == "bot") {
+
+				//jungleBot coordinates		
+				xD = 269;
+				yD = 269;
+		
+				xE = 269;
+				yE = 103;
+		
+				xF = 103;
+				yF = 269;
+
+				var canvas = document.getElementById('myCanvas');
+
+				var ctx2 = canvas.getContext('2d');
+				ctx2.beginPath();
+				ctx2.moveTo(xD,yD);
+				ctx2.lineTo(xE,yE);
+				ctx2.lineTo(xF,yF);
+				ctx2.lineTo(xD,yD);
+				ctx2.closePath();
+
+				if (ctx2.isPointInPath(this.x, this.y)) {
+					console.log(this.color + " is jungle bot");
+					this.status = "inactive";
+				}
+			}
+		}
+
+		this.draw = function() {
+			
+			if(this.status == 'active') {
+			
+			var canvas = document.getElementById('myCanvas');
+			var context = canvas.getContext('2d');
+			var centerX = this.x;
+			var centerY = this.y;
+			var radius = 10;
+
+			context.beginPath();
+			context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+			context.fillStyle = this.color;
+			context.fill();
+			context.lineWidth = 2;
+			context.strokeStyle = '#003300';
+			context.stroke();
+
+			}
+		
+		}
+
+		this.update = function() {
+
+			this.checkPosition(this.x,this.y, "top");
+			this.checkPosition(this.x,this.y, "bot");
+			this.move(this.x,this.y);
+
+			//update score
+			$('#score').empty();
+			$('#score').append(score);
+
+		}
+	}
+
+	function callMiss(position) {
+		if (position == 'top') {
+			if(player1.status == 'inactive') {
+				score = score+1;
+				player1.respawn();
+			} else {
+				alert("Top isn't missing...");
+			}
+		} else if (position == 'mid') {
+			if(player2.status == 'inactive') {
+				score = score+1;
+				player2.respawn();
+			} else {
+				alert("Mid isn't missing...");
+			}
+		} else if (position == 'bot') {
+			if(player3.status == 'inactive') {
+				score = score+1;
+				player3.respawn();
+			} else {
+				alert("Bot isn't missing...");
+			}
+		}
+	}
+
+	function update() {
+		player1.update();
+		player2.update();
+		player3.update();
+	}
+
+	function drawJungle(position) {
+
+		if (position == "top") {
+			//jungleTop coordinates		
+			xA = 46;
+			yA = 46;
+
+			xB = 231;
+			yB = 46;
+
+			xC = 46;
+			yC = 231;
+
+		} else if (position == "bot") {
+			//jungleBot coordinates		
+			xA = 275;
+			yA = 275;
+
+			xB = 275;
+			yB = 89;
+
+			xC = 89;
+			yC = 275;
+		}
+
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+
+		ctx.beginPath();
+		ctx.moveTo(xA,yA);
+		ctx.lineTo(xB,yB);
+		ctx.lineTo(xC,yC);
+		ctx.lineTo(xA,yA);
+		ctx.fillStyle="#d5d5d5";
+		ctx.fill();
+		ctx.strokeStyle="#0025c3";
+		ctx.stroke();
+	}
+
+	function drawHitbox(jungle) {
+	
+		if (jungle == "top") {
+		//	jungleTop coordinates		
+			xA = 52;
+			yA = 52;
+
+			xB = 217;
+			yB = 52;
+
+			xC = 52;
+			yC = 217;
+		
+
+		} else if (jungle == "bot") {
+		//	jungleBot coordinates		
+			xA = 269;
+			yA = 269;
+	
+			xB = 269;
+			yB = 103;
+	
+			xC = 103;
+				yC = 269;
+		}
+
+		var c = document.getElementById("myCanvas");
+		var ctx = c.getContext("2d");
+
+		ctx.beginPath();
+		ctx.moveTo(xA,yA);
+		ctx.lineTo(xB,yB);
+		ctx.lineTo(xC,yC);
+		ctx.lineTo(xA,yA);
+		ctx.fillStyle="#555";
+		ctx.fill();
+		ctx.strokeStyle="#999";
+		ctx.stroke();		
+
+	}
+
+	function draw() {
+		canvas.clearRect(0,0,CANVAS_WIDTH,CANVAS_HEIGHT);
+		player1.draw();
+		player2.draw();
+		player3.draw();
+		drawJungle("top");
+		drawJungle("bot");
+	//	drawHitbox("top");
+	//	drawHitbox("bot");
+	}
+
+	function randomMovement(min,max) {
+	    return Math.floor(Math.random()*(max-min+1)+min);
+	}
+
+</script>
+
+</body>
+</html>
