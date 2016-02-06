@@ -1,0 +1,10 @@
+{
+  "name": "Project MiniMap",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Project MiniMap - Call Miss Please",
+  "browser_action": {
+    "default_title": "Project MiniMap",      // optional; shown in tooltip
+    "default_popup": "ProjectMiniMap.html"        // optional
+  }
+}

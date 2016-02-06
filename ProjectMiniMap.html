@@ -14,7 +14,8 @@
     		border: 1px solid #999;
     		background: #eee;
     		box-shadow: 5px 8px 5px #888888;
-    		width: 320px; }
+    		width: 320px;
+    		height: 640px; }
 
     	#title {
     		text-align: center;
@@ -36,6 +37,23 @@
     			font-size: 18px;
     			padding: 5px 0;
     			margin: 0; }
+    			#scoreboard #changeBox {
+    				width: 50px;
+    				height: 50px;
+    				position: relative;
+    				left: 200px; }
+    			#scoreboard #changeBox h2 {	}
+    			#scoreboard #changeBox h2 span {
+    			top: 10px;
+    			font-size: 28px;
+    			left: 12px;
+    			position: absolute;	}
+    			#scoreboard #changeBox h2 span.plus {
+    				color: green;
+    			}
+    			#scoreboard #changeBox h2 span.minus {
+    				color: red;
+    			}
 			#timer { 
 				width: 110px;
 				display: block; 
@@ -64,11 +82,12 @@
 </head>
 <body>
 	<div id="gamewrapper">
-		<div id="title"><h1>Project MiniMap</h1></div>
+		<div id="title"><h1>Project MiniMap</h1><a href="#" id="pause" onclick="pauseGame()">pause</a></div>
 		<hr />
 		<div id="scoreboard">
 			<div id="timer"><h2>Time</h2><span></span></div>
 			<div id="score"><h2>Score</h2><span></span></div>
+			<div id="changeBox"><h2></h2></div>
 			<div class="clear"></div>
 		</div>
 		<hr />
@@ -94,19 +113,36 @@
 	var score = 0;
 	var timer = 0;
 
+	//global pause
+	var pause = false;
+
 	//game timer
 	setInterval(function () {
-		++timer;
+		if (pause == false) {
+			++timer;
+		}
 	}, 1000);
 
 	setInterval(function() {
-	  update();
-	  draw();
+		if (pause == false) {
+		update();
+	  draw();		
+		}
+	  
 	}, 1000/FPS);
+
+	function pauseGame() {
+		console.log("pause function is called");
+		if (pause == false) {
+			pause = true;
+		} else {
+			pause = false;
+		}
+	}
 
 	//define players
 	var player1 = new player("top", "red");
-	var player2 = new player("mid", "blue");
+	var player2 = new player("mid", "yellow");
 	var player3 = new player("bot", "green");
 
 	
@@ -265,27 +301,48 @@
 		}
 	}
 
+	function updateScore(operation) {
+		$("#changeBox h2").hide();
+		if (operation == "plus") {
+			score = score+1;
+			$("#changeBox h2").append("<span class='plus' style='hidden'>+1</span");
+			$("#changeBox h2").fadeIn(250).delay(500).fadeOut(function(){
+				$("#changeBox h2").empty();
+			});
+
+		} else if (operation == "minus") {
+			score = score-1;
+			$("#changeBox h2").append("<span class='minus' style='hidden'>-1</span");
+			$("#changeBox h2").fadeIn(250).delay(800).fadeOut(function(){
+				$("#changeBox h2").empty();
+			});
+	
+		} else {
+			console.log("PM001 - updateScore was called with no operation given.");
+		}
+	}
+
 	function callMiss(position) {
 		if (position == 'top') {
 			if(player1.status == 'inactive') {
-				score = score+1;
+				updateScore("plus");
 				player1.respawn();
 			} else {
-				alert("Top isn't missing...");
+				updateScore("minus");
 			}
 		} else if (position == 'mid') {
 			if(player2.status == 'inactive') {
-				score = score+1;
+				updateScore("plus");
 				player2.respawn();
 			} else {
-				alert("Mid isn't missing...");
+				updateScore("minus");
 			}
 		} else if (position == 'bot') {
 			if(player3.status == 'inactive') {
-				score = score+1;
+				updateScore("plus");
 				player3.respawn();
 			} else {
-				alert("Bot isn't missing...");
+				updateScore("minus");
 			}
 		}
 	}
